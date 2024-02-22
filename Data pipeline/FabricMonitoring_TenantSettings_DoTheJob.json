@@ -1,0 +1,96 @@
+{
+    "name": "FabricMonitoring_TenantSettings_DoTheJob",
+    "objectId": "7915b710-8835-44db-b0ef-e35a919fa053",
+    "properties": {
+        "activities": [
+            {
+                "name": "tenantsettings_risktypes",
+                "type": "RefreshDataflow",
+                "dependsOn": [],
+                "policy": {
+                    "timeout": "0.12:00:00",
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "typeProperties": {
+                    "dataflowId": "0b44ae35-0f90-404f-ab72-1a4c830c1772",
+                    "workspaceId": "cfb8ee98-7eb5-4745-addd-f21dda0bfccb",
+                    "notifyOption": "NoNotification"
+                }
+            },
+            {
+                "name": "fabric monitoring getData",
+                "type": "TridentNotebook",
+                "dependsOn": [],
+                "policy": {
+                    "timeout": "0.12:00:00",
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "typeProperties": {
+                    "notebookId": "6c79ac5c-86d7-4de9-9e45-98bbd2b2c4b9",
+                    "workspaceId": "cfb8ee98-7eb5-4745-addd-f21dda0bfccb"
+                }
+            },
+            {
+                "name": "fabric monitoring transfomData",
+                "type": "TridentNotebook",
+                "dependsOn": [
+                    {
+                        "activity": "fabric monitoring getData",
+                        "dependencyConditions": [
+                            "Completed"
+                        ]
+                    }
+                ],
+                "policy": {
+                    "timeout": "0.12:00:00",
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "typeProperties": {
+                    "notebookId": "71fb71e5-83e0-4039-bcab-dc0322b40803",
+                    "workspaceId": "cfb8ee98-7eb5-4745-addd-f21dda0bfccb"
+                }
+            },
+            {
+                "name": "refresh the semantic model",
+                "type": "TridentNotebook",
+                "dependsOn": [
+                    {
+                        "activity": "tenantsettings_risktypes",
+                        "dependencyConditions": [
+                            "Completed"
+                        ]
+                    },
+                    {
+                        "activity": "fabric monitoring transfomData",
+                        "dependencyConditions": [
+                            "Completed"
+                        ]
+                    }
+                ],
+                "policy": {
+                    "timeout": "0.12:00:00",
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "typeProperties": {
+                    "notebookId": "be6c8d5a-46e3-4eba-9626-70c68abea6aa",
+                    "workspaceId": "cfb8ee98-7eb5-4745-addd-f21dda0bfccb"
+                }
+            }
+        ],
+        "annotations": [],
+        "lastModifiedByObjectId": "35ccf0d4-9e71-4d15-bebb-7c78661c64b3",
+        "lastPublishTime": "2024-02-22T10:00:14Z"
+    }
+}
