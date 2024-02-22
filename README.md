@@ -24,4 +24,4 @@ The current solution is leveraging Microsoft Fabric, comprising a data pipeline,
 Data ready for consumption is stored in delta tables inside a lake house. Even though I follow medallion design, data is not spread across different lake houses, workspaces, or Fabric capacities.
 ## Overall architecture (schematic overview)
 The next image shows a schematic overview of the current current solution:
-Here comes an image
+![Alt text](https://github.com/tomatminceddata/FabricMonitoring/blob/main/Images/Overall%20architecture%20-%20schematic.png)
