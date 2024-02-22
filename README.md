@@ -24,4 +24,118 @@ The current solution is leveraging Microsoft Fabric, comprising a data pipeline,
 Data ready for consumption is stored in delta tables inside a lake house. Even though I follow medallion design, data is not spread across different lake houses, workspaces, or Fabric capacities.
 ## Overall architecture (schematic overview)
 The next image shows a schematic overview of the current current solution:
-Here comes an image
+![Alt text](https://github.com/tomatminceddata/FabricMonitoring/blob/main/Images/Overall%20architecture%20-%20schematic.png)
+You see this: the solution is based solely (almost) on Microsoft Fabric. The only component that is not part of Microsoft Fabric is Azure Key Vault. I use Azure Key Vault to store the secret of the Service Principal that is authenticating against the Microsoft Fabric REST API endpoint to retrieve the tenant settings. The solution is leveraging dataflows Gen 2 and notebooks for data retrieval. The execution is orchestrated by a data pipeline. The original JSON document will be stored in the files section of the lake house, I consider this useful whenever I want to rebuild the complete history. The dataflow extracts data from an Excel file and stores the data into a delta table called “fabricmonitoring_tenantsettings_settings_silver.” Because there are no transformations, the delta table will be directly stored to the silver the layer.
+
+Note: I decided to build the medallion layer by table names because of the small amount of data and the small number of data loads (once a day).
+## The Data
+Currently, the data is extracted from the Microsoft Fabric Rest endpoint: https://learn.microsoft.com/en-us/rest/api/fabric/admin/tenants/get-tenant-settings?tabs=HTTP
+
+Data extraction is done by a service principal (sometimes I imagine a service principal as my larger brother). Because a password (being precise, a secret) is required to authenticate against the REST API  endpoint, an Azure Key Vault is involved. If you have no idea about azure Key Vault, the presentation mentioned at the end contains some introductory slides.
+
+Next to the data
+## Orchestration
+The orchestration of the execution of the dataflow and the notebooks is done by a single pipeline:
+![Alt text](https://github.com/tomatminceddata/FabricMonitoring/blob/main/Images/FabricMonitorint_orchestration.png)
+There is nothing special about the data pipeline, you will find the json of this data pipeline in the folder “Data pipeline” of this repo.
+## The Excel file, assigning risk types to a setting
+The Excel file contains all settings with risk types assigned. The risk types are:
+
+- Data Residency
+- Data Exfiltration
+- Data Literacy
+- Data Security
+- Data Integrity
+- Resource consumption
+
+The idea is simple: each setting might be exposed to one or more risk types. Knowing about these risk types helps to mitigate these risks; the most drastic action to be taken is disabling a feature. Please be aware that the assignment is my point of view. 
+
+This presentation holds a short definition of the above-mentioned risk tpyes. From a data modeling perspective, this Excel file can be considered to be the representation of the dimension table of the settings.
+
+In my solution, this Excel file is stored in a SharePoint library and must be manually updated/adapted as soon as new settings arrive.
+## The notebooks
+At the current moment there are three notebooks. You will find the notebooks in the Notebooks folder of this repo. Import these notebooks to a Fabric workspace that you use for development purposes. 
+### FabricMonitoring_TenantSettings_GetData
+This notebook extracts the data from the REST API endpoint. Accessing the Microsoft Fabric API requires authentication. The solution is leveraging a Service Principal, a registered app in your Azure Entra Id. If you are not familiar with app registration in Azure Entra Id, I recommend you start reading here: https://learn.microsoft.com/en-us/entra/identity-platform/app-objects-and-service-principals?tabs=browser#service-principal-object
+
+Add the app to an Entra Id group and add this group to the allowed  security groups of the setting “Service principals can use Fabric APIs.” You will find this setting in the Developer settings group
+![Alt text](https://github.com/tomatminceddata/FabricMonitoring/blob/main/Images/FabricMonitoring_TenantSetting_SPNcanUseFabricAPI.png)
+The JSON documents are stored to the files section, the next image shows this for my environment:
+![Alt text](https://github.com/tomatminceddata/FabricMonitoring/blob/main/Images/FabricMonitoring_FileFolder.png)
+The relative path for the storage of the JSON documents can be configured in the JSON document called “FabricMonitoring_Variables.json.” Read about this document in the Setup chapter further down below.
+### FabricMonitoring_TenantSettings_TransformData
+This notebook reads the JSONs from the file section and writes the values into a delta table called “fabricmonitoring_tenantsettings_raw”
+
+Currently this happens every time the notebook is executed. Because of the small size of the single JSON documents I consider this feasible. Another reason why I’m doing this is - the solution is in a flux and might change  over the next months.
+
+After the “_raw” delta table is created, the merge command of the DeltaTable object is used to propagate data to the _bronze and _silver delta tables. Currently there are no _gold tables, this will change when the solution evolves.
+### FabricMonitoring_TenantSettings_RefreshSemanticModel
+This notebook is refreshing the semantic when executed. Refreshing of a semantic models is necessary even if the model is using the direct lake connection mode. Because of the direct lake connection mode can be considered a meta data operation. the execution takes only seconds.
+## The dataflow - FabricMonitoring_TenanSettings_Settings
+This dataflow reads the data from the Excel file (located in a SharePoint folder) into the the delta table “fabricmonitoring_tenantsettings_settings_silver”
+
+At the moment this table can be considered the dimension table that represent the settings.
+
+You will find the JSON of this dataflow in the folder “dataflows” of this repo.
+## The semantic model
+Currently I have no idea how to make it simple to share the metadata of a semantic model, probably I will start using Tabular Editor c# scripts in a couple of weeks. For now some screenshots and some code blocks have to be sufficient.
+### The relationships of the model
+Next images show the relationships of the semantic model:
+![Alt text](https://github.com/tomatminceddata/FabricMonitoring/blob/main/Images/FabricMonitoring_Relationships.png)
+And the properties of the relationship:
+![Alt text](https://github.com/tomatminceddata/FabricMonitoring/blob/main/Images/FabricMonitoring_RelationshipProperties.png)
+### The measures
+
+- latest fileDate
+latest fileDate is determined to avoid double counts
+    
+    ```jsx
+    latest fileDate = 
+    MAXX( 
+        VALUES( 'fabricmonitoring_tenantsettings_silver'[fileDate] )
+        , 'fabricmonitoring_tenantsettings_silver'[fileDate]
+    )
+    ```
+    
+- “# no of settings” (home table)
+Counts the no of settings, because at the current moment there is. no real fact table, DISTINCTCOUNT is used
+    
+    ```jsx
+    # of Settings = 
+    var latestFileDate = [latest fileDate]
+    return
+    CALCULATE( 
+        DISTINCTCOUNT( 'fabricmonitoring_tenantsettings_settings_silver'[settingName] ) 
+        , 'fabricmonitoring_tenantsettings_silver'[fileDate] = latestFileDate
+    )
+    ```
+    
+- state
+this measure determines the state of a setting,
+    - -1, this is the state for the first measurement
+    - 0, the setting is not new
+    - 1, the setting never appeared before, a new setting
+    
+    ```jsx
+    state = 
+    var previousDate = 
+        MAXX(
+            OFFSET(
+                -1
+                ,SUMMARIZE(
+                    ALLSELECTED( 'fabricmonitoring_tenantsettings_silver'[fileDate] )
+                    , 'fabricmonitoring_tenantsettings_silver'[fileDate]
+                )
+                , ORDERBY( 'fabricmonitoring_tenantsettings_silver'[fileDate] , ASC)
+                , DEFAULT
+            )
+            , 'fabricmonitoring_tenantsettings_silver'[fileDate]
+        )
+    var isknown =
+        CALCULATE( LASTNONBLANK( 'fabricmonitoring_tenantsettings_settings_silver'[settingName] , 0) , 'fabricmonitoring_tenantsettings_silver'[fileDate] = previousDate)
+    return
+    IF( ISBLANK( previousDate )
+        , -1
+        , IF( NOT( ISBLANK( isknown ) ), 0 , 1)
+    )
+    ```
