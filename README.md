@@ -60,3 +60,82 @@ This notebook extracts the data from the REST API endpoint. Accessing the Micros
 
 Add the app to an Entra Id group and add this group to the allowed  security groups of the setting “Service principals can use Fabric APIs.” You will find this setting in the Developer settings group
 ![Alt text](https://github.com/tomatminceddata/FabricMonitoring/blob/main/Images/FabricMonitoring_TenantSetting_SPNcanUseFabricAPI.png)
+The JSON documents are stored to the files section, the next image shows this for my environment:
+![Alt text](https://github.com/tomatminceddata/FabricMonitoring/blob/main/Images/FabricMonitoring_FileFolder.png)
+The relative path for the storage of the JSON documents can be configured in the JSON document called “FabricMonitoring_Variables.json.” Read about this document in the Setup chapter further down below.
+### FabricMonitoring_TenantSettings_TransformData
+This notebook reads the JSONs from the file section and writes the values into a delta table called “fabricmonitoring_tenantsettings_raw”
+
+Currently this happens every time the notebook is executed. Because of the small size of the single JSON documents I consider this feasible. Another reason why I’m doing this is - the solution is in a flux and might change  over the next months.
+
+After the “_raw” delta table is created, the merge command of the DeltaTable object is used to propagate data to the _bronze and _silver delta tables. Currently there are no _gold tables, this will change when the solution evolves.
+### FabricMonitoring_TenantSettings_RefreshSemanticModel
+This notebook is refreshing the semantic when executed. Refreshing of a semantic models is necessary even if the model is using the direct lake connection mode. Because of the direct lake connection mode can be considered a meta data operation. the execution takes only seconds.
+## The dataflow - FabricMonitoring_TenanSettings_Settings
+This dataflow reads the data from the Excel file (located in a SharePoint folder) into the the delta table “fabricmonitoring_tenantsettings_settings_silver”
+
+At the moment this table can be considered the dimension table that represent the settings.
+
+You will find the JSON of this dataflow in the folder “dataflows” of this repo.
+## The semantic model
+Currently I have no idea how to make it simple to share the metadata of a semantic model, probably I will start using Tabular Editor c# scripts in a couple of weeks. For now some screenshots and some code blocks have to be sufficient.
+### The relationships of the model
+Next images show the relationships of the semantic model:
+![Alt text](https://github.com/tomatminceddata/FabricMonitoring/blob/main/Images/FabricMonitoring_Relationships.png)
+And the properties of the relationship:
+![Alt text](https://github.com/tomatminceddata/FabricMonitoring/blob/main/Images/FabricMonitoring_RelationshipProperties.png)
+### The measures
+
+- latest fileDate
+latest fileDate is determined to avoid double counts
+    
+    ```jsx
+    latest fileDate = 
+    MAXX( 
+        VALUES( 'fabricmonitoring_tenantsettings_silver'[fileDate] )
+        , 'fabricmonitoring_tenantsettings_silver'[fileDate]
+    )
+    ```
+    
+- “# no of settings” (home table)
+Counts the no of settings, because at the current moment there is. no real fact table, DISTINCTCOUNT is used
+    
+    ```jsx
+    # of Settings = 
+    var latestFileDate = [latest fileDate]
+    return
+    CALCULATE( 
+        DISTINCTCOUNT( 'fabricmonitoring_tenantsettings_settings_silver'[settingName] ) 
+        , 'fabricmonitoring_tenantsettings_silver'[fileDate] = latestFileDate
+    )
+    ```
+    
+- state
+this measure determines the state of a setting,
+    - -1, this is the state for the first measurement
+    - 0, the setting is not new
+    - 1, the setting never appeared before, a new setting
+    
+    ```jsx
+    state = 
+    var previousDate = 
+        MAXX(
+            OFFSET(
+                -1
+                ,SUMMARIZE(
+                    ALLSELECTED( 'fabricmonitoring_tenantsettings_silver'[fileDate] )
+                    , 'fabricmonitoring_tenantsettings_silver'[fileDate]
+                )
+                , ORDERBY( 'fabricmonitoring_tenantsettings_silver'[fileDate] , ASC)
+                , DEFAULT
+            )
+            , 'fabricmonitoring_tenantsettings_silver'[fileDate]
+        )
+    var isknown =
+        CALCULATE( LASTNONBLANK( 'fabricmonitoring_tenantsettings_settings_silver'[settingName] , 0) , 'fabricmonitoring_tenantsettings_silver'[fileDate] = previousDate)
+    return
+    IF( ISBLANK( previousDate )
+        , -1
+        , IF( NOT( ISBLANK( isknown ) ), 0 , 1)
+    )
+    ```
