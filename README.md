@@ -177,3 +177,5 @@ Adapt the value accordingly
 "theLakehouse": "theLakehouse",
 "deltaTablePrefix": "fabricmonitoring_"
 ```
+# Some additional notes
+This is the link to a presentation at the Global Power Platform Bootcamp Hamburg. This presentation contains definitions of the risk types: https://github.com/tomatminceddata/TomsPublicSpeaking/blob/main/20240224%20-%20GPPBCHH%20-%20Tom%20Martens%20-%20Microsoft%20Fabric%20Tenant%20Settings/2024017%20-%20GPPBC%20-%20Tom%20Martens%20-%20Microsoft%20Fabric%20Tenant%20Settings%20-%2020240224.pptx
