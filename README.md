@@ -50,9 +50,9 @@ The Excel file contains all settings with risk types assigned. The risk types ar
 
 The idea is simple: each setting might be exposed to one or more risk types. Knowing about these risk types helps to mitigate these risks; the most drastic action to be taken is disabling a feature. Please be aware that the assignment is my point of view. 
 
-This presentation holds a short definition of the above-mentioned risk tpyes. From a data modeling perspective, this Excel file can be considered to be the representation of the dimension table of the settings.
+The presentation referenced at the end of this document holds short definitions of the above-mentioned risk tpyes. From a data modeling perspective, this Excel file can be considered to be the representation of the dimension table of the settings.
 
-In my solution, this Excel file is stored in a SharePoint library and must be manually updated/adapted as soon as new settings arrive.
+In my solution, this Excel file is stored in a SharePoint library and must be manually updated/adapted as soon as new settings arrive. This Excel file will be processed by the dataflow Gen 2. You will find the Excel in the folder Risktypes of this repo.
 ## The notebooks
 At the current moment there are three notebooks. You will find the notebooks in the Notebooks folder of this repo. Import these notebooks to a Fabric workspace that you use for development purposes. 
 ### FabricMonitoring_TenantSettings_GetData
