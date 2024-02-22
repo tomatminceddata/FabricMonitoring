@@ -1,4 +1,4 @@
-For quite some time, I claimed that I’m a Microsoft Fabric/Power BI Sherpa, helping an organization (my colleagues) have a successful and safe journey (the definition of success follows in a short moment). I believe the foundation for a joyful journey is the proper configuration of the Microsoft Fabric/Power BI tenant settings (next to knowing some technical things). For this reason, I created (and still create) this solution. This solution is not final, and currently, I have no roadmap. Nevertheless, I think it’s a start.
+For quite some time, I claimed that I’m a Microsoft Fabric/Power BI Sherpa, helping an organization (my colleagues) have a successful and safe journey (the definition of success follows in a short moment). I believe the foundation for a joyful journey is the proper configuration of the Microsoft Fabric/Power BI tenant settings (next to knowing some technical things). For this reason, I started with the tenant settings other aspects will follow in the next months. This solution is not done yet, and currently, I have no roadmap. Nevertheless, I think it’s a start.
 # Tenant Setting
 At the moment of this writing (February, 24th 2024), there are 119 settings. I consider the configuration of these settings foundational for successfully using Power BI and Microsoft Fabric. My definition of success:
 
@@ -139,3 +139,43 @@ this measure determines the state of a setting,
         , IF( NOT( ISBLANK( isknown ) ), 0 , 1)
     )
     ```
+# Why I’m doing this´
+If you are wondering why I’m doing this, on February 22nd, 2024, a new setting appeared. All the above helps to spot new settings easily, and this is only the most obvious use case.
+A simple visualization that shows the new setting:
+![Alt text](https://github.com/tomatminceddata/FabricMonitoring/blob/main/Images/FabricMonitoring_ANewSetting.png)
+# Setup this solution
+
+## The configuration file - FabricMonitoring_Variables.json
+
+You will find this file in the folder “GeneralVariables” of this repo. At the current moment it is mandatory to upload this document to the root folder of the default lake house, meaning the lake house you assign to the notebooks you will find in this repo. Currently it’s also mandatory to assign a lakehouse to the notebooks.
+
+The variables that can be configured:
+
+- tenantId
+The tenant Id that is used to authenticate against Microsoft’s Fabric REST API endpoint, , adapt the value accordingly
+- clientId
+The client Id of the Service Principal used to authenticate against Microsoft’s Fabric REST API endpoint, adapt the value accordingly. Basically this is the user name, a service principal can also be considered being a user.
+- nameOfTheKeyVault
+The name of the Azure Key Vault that holds the secret of the SPN, adapt the value accordingly.
+- nameOfTheKey
+The name of the secret, adapt the value accordingly. This is just a name to identify the secret.
+- filepathTenantSettings
+The relative path where the JSON documents will be stored, adapt the path accordingly
+- theLakehouse
+The name of the lake house, adapt the value accordingly. This name is used to determine if delta tables have to be created or not.
+- deltaTablePrefix
+I use a prefix for deltatables, to separate tables in the lakehouse by “solution.” I do this because I consider it more manageable having one lake house instead of having multiple lakehouse for every solution. A table name will look like this:
+fabricmonitoring_tenantsettings_bronze
+Adapt the value accordingly
+
+```
+"tenantId": "put your tenantid here",
+"clientId":  "put the client id of the SPN here",
+"nameOfTheKeyVAult": "put the name of the Azure Key Vault here",
+"nameOfTheKey": "put the name of the secret here",
+"filepathTenantSettings": "Files/FabricMonitoring/TenantSettings/",
+"theLakehouse": "theLakehouse",
+"deltaTablePrefix": "fabricmonitoring_"
+```
+# Some additional notes
+This is the link to a presentation at the Global Power Platform Bootcamp Hamburg. This presentation contains definitions of the risk types: https://github.com/tomatminceddata/TomsPublicSpeaking/blob/main/20240224%20-%20GPPBCHH%20-%20Tom%20Martens%20-%20Microsoft%20Fabric%20Tenant%20Settings/20240224%20-%20GPPBC%20-%20Tom%20Martens%20-%20Microsoft%20Fabric%20Tenant%20Settings%20-%2020240224.pptx
