@@ -12,3 +12,9 @@ features that are made available to your organization. If you have
 concerns around sensitive data, some of our features might not be right 
 for your organization, or you might only want a particular feature to be
  available to a specific group.
+# Beware
+If you want to rebuild this solution on one of your Microsoft Fabric capacities, read the next two paragraphs carefully.
+
+I can not be held responsible for any misfortune you might experience using this solution or parts of this solution (read the license document of this repo). Test this solution on a Fabric capacity that you use for development. I tried hard, but I’m only human. 
+
+Make your assignments and add or remove risk types (adding or removing risk types requires the adaption of the dataflow). This is the Excel file in the Risktypes folder of this repo. Finally, there is a short chapter called Setup at the end of this readme, read it 😉
