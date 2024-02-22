@@ -7,3 +7,8 @@ Successfully using Microsoft Fabric and Power BI means enabling an organization 
 I started this solution with these because the tenant settings are at the foundation.
 
 According to the official documentation, tenant settings are defined as:
+> Tenant settings enable fine-grained control over the 
+features that are made available to your organization. If you have 
+concerns around sensitive data, some of our features might not be right 
+for your organization, or you might only want a particular feature to be
+ available to a specific group.
