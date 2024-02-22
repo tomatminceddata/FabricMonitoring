@@ -140,7 +140,7 @@ this measure determines the state of a setting,
     )
     ```
 # Why I’m doing this´
-If you are wondering why I’m doing this, on February 24, 2024, a new setting appeared, all the above helped me to easily spot new sttings, and this is only the most obvious use case.
+If you are wondering why I’m doing this, on February 22nd, 2024, a new setting appeared, all the above helped me to easily spot new sttings, and this is only the most obvious use case.
 A simple visualization that shows the new setting:
 ![Alt text](https://github.com/tomatminceddata/FabricMonitoring/blob/main/Images/FabricMonitoring_ANewSetting.png)
 # Setup this solution
