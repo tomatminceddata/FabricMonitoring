@@ -18,3 +18,9 @@ If you want to rebuild this solution on one of your Microsoft Fabric capacities,
 I can not be held responsible for any misfortune you might experience using this solution or parts of this solution (read the license document of this repo). Test this solution on a Fabric capacity that you use for development. I tried hard, but I’m only human. 
 
 Make your assignments and add or remove risk types (adding or removing risk types requires the adaption of the dataflow). This is the Excel file in the Risktypes folder of this repo. Finally, there is a short chapter called Setup at the end of this readme, read it 😉
+# Outline of the current solution
+The current solution is leveraging Microsoft Fabric, comprising a data pipeline, a lake house, some notebooks, a dataflow, a semantic model, and maybe the most important piece, an Excel file.
+
+Data ready for consumption is stored in delta tables inside a lake house. Even though I follow medallion design, data is not spread across different lake houses, workspaces, or Fabric capacities.
+## Overall architecture (schematic overview)
+The next image shows a schematic overview of the current current solution:
