@@ -188,9 +188,9 @@ Import the notebooks into the workspace you want to use for this solution. Assig
 
 Create the folder structure you configured in the configuration file.
 ## Run the notebooks
-Start with
-1 FabricMonitoring_TenantSettings_GetData
-2 FabricMonitoring_TenantSettings_TransformData
-3 FabricMonitoring_TenantSettings_RefreshSemanticModel (this step is only necessary, if you created custom semantic model)
+Use this sequence
++ FabricMonitoring_TenantSettings_GetData
++ FabricMonitoring_TenantSettings_TransformData
++ FabricMonitoring_TenantSettings_RefreshSemanticModel (this step is only necessary, if you created custom semantic model)
 # Some additional notes
 This is the link to a presentation at the Global Power Platform Bootcamp Hamburg. This presentation contains definitions of the risk types: https://github.com/tomatminceddata/TomsPublicSpeaking/blob/main/20240224%20-%20GPPBCHH%20-%20Tom%20Martens%20-%20Microsoft%20Fabric%20Tenant%20Settings/20240224%20-%20GPPBC%20-%20Tom%20Martens%20-%20Microsoft%20Fabric%20Tenant%20Settings%20-%2020240224.pptx
