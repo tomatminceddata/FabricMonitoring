@@ -144,10 +144,13 @@ If you are wondering why I’m doing this, on February 22nd, 2024, a new setting
 A simple visualization that shows the new setting:
 ![Alt text](https://github.com/tomatminceddata/FabricMonitoring/blob/main/Images/FabricMonitoring_ANewSetting.png)
 # Setup this solution
+## Create a lakehouse (or use an existing one)
+
+The name of a lake house is required for the configuration file (see the next section); in addition, the result of an API request will be stored as a JSON file in the files section (currently, the solution is using a relative path; this might change in the future.
 
 ## The configuration file - FabricMonitoring_Variables.json
 
-You will find this file in the folder “GeneralVariables” of this repo. At the current moment it is mandatory to upload this document to the root folder of the default lake house, meaning the lake house you assign to the notebooks you will find in this repo. Currently it’s also mandatory to assign a lakehouse to the notebooks.
+You will find this file in the folder “GeneralVariables” of this repo. Currently, it is mandatory to upload this JSON document to the root files folder of the default lake house, meaning the lake house you assign to the notebooks you will find in this repo. Currently it’s also mandatory to assign a lakehouse to the notebooks.
 
 The variables that can be configured:
 
@@ -177,5 +180,17 @@ Adapt the value accordingly
 "theLakehouse": "theLakehouse",
 "deltaTablePrefix": "fabricmonitoring_"
 ```
+## Import the notebooks
+
+Import the notebooks into the workspace you want to use for this solution. Assign the lakehouse you want to use as the default.
+
+## Create the folder structure
+
+Create the folder structure you configured in the configuration file.
+## Run the notebooks
+Start with
+1 FabricMonitoring_TenantSettings_GetData
+2 FabricMonitoring_TenantSettings_TransformData
+3 FabricMonitoring_TenantSettings_RefreshSemanticModel (this step is only necessary, if you created custom semantic model)
 # Some additional notes
 This is the link to a presentation at the Global Power Platform Bootcamp Hamburg. This presentation contains definitions of the risk types: https://github.com/tomatminceddata/TomsPublicSpeaking/blob/main/20240224%20-%20GPPBCHH%20-%20Tom%20Martens%20-%20Microsoft%20Fabric%20Tenant%20Settings/20240224%20-%20GPPBC%20-%20Tom%20Martens%20-%20Microsoft%20Fabric%20Tenant%20Settings%20-%2020240224.pptx
