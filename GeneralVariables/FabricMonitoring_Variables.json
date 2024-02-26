@@ -1,8 +1,8 @@
 {
-    "tenantId": "<your tenant id>",
-    "clientId":  "<the client id of the SPN>",
-    "nameOfTheKeyVAult": "<the name of your Azure Key Vault>",
-    "nameOfTheKey": "<the name of the secret>",
+    "tenantId": "f62b8f20-f16e-4a6e-9b1f-6e2d2e6ac089",
+    "clientId":  "2f4855ed-8de5-4447-b7af-bcb2725b4b44",
+    "nameOfTheKeyVault": "minceddataAzureKeyVault",
+    "nameOfTheKey": "PowerBIAdminAPIWithAzureSQL",
     "filepathTenantSettings": "Files/FabricMonitoring/TenantSettings/",
     "theLakehouse": "theLakehouse",
     "deltaTablePrefix": "fabricmonitoring_"
