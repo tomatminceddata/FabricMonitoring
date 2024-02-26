@@ -50,9 +50,9 @@ The Excel file contains all settings with risk types assigned. The risk types ar
 
 The idea is simple: each setting might be exposed to one or more risk types. Knowing about these risk types helps to mitigate these risks; the most drastic action to be taken is disabling a feature. Please be aware that the assignment is my point of view. 
 
-This presentation holds a short definition of the above-mentioned risk tpyes. From a data modeling perspective, this Excel file can be considered to be the representation of the dimension table of the settings.
+The presentation referenced at the end of this document holds short definitions of the above-mentioned risk tpyes. From a data modeling perspective, this Excel file can be considered to be the representation of the dimension table of the settings.
 
-In my solution, this Excel file is stored in a SharePoint library and must be manually updated/adapted as soon as new settings arrive.
+In my solution, this Excel file is stored in a SharePoint library and must be manually updated/adapted as soon as new settings arrive. This Excel file will be processed by the dataflow Gen 2. You will find the Excel in the folder Risktypes of this repo.
 ## The notebooks
 At the current moment there are three notebooks. You will find the notebooks in the Notebooks folder of this repo. Import these notebooks to a Fabric workspace that you use for development purposes. 
 ### FabricMonitoring_TenantSettings_GetData
@@ -144,10 +144,13 @@ If you are wondering why I’m doing this, on February 22nd, 2024, a new setting
 A simple visualization that shows the new setting:
 ![Alt text](https://github.com/tomatminceddata/FabricMonitoring/blob/main/Images/FabricMonitoring_ANewSetting.png)
 # Setup this solution
+## Create a lakehouse (or use an existing one)
+
+The name of a lake house is required for the configuration file (see the next section); in addition, the result of an API request will be stored as a JSON file in the files section (currently, the solution is using a relative path; this might change in the future.
 
 ## The configuration file - FabricMonitoring_Variables.json
 
-You will find this file in the folder “GeneralVariables” of this repo. At the current moment it is mandatory to upload this document to the root folder of the default lake house, meaning the lake house you assign to the notebooks you will find in this repo. Currently it’s also mandatory to assign a lakehouse to the notebooks.
+You will find this file in the folder “GeneralVariables” of this repo. Currently, it is mandatory to upload this JSON document to the root files folder of the default lake house, meaning the lake house you assign to the notebooks you will find in this repo. Currently it’s also mandatory to assign a lakehouse to the notebooks.
 
 The variables that can be configured:
 
@@ -177,5 +180,17 @@ Adapt the value accordingly
 "theLakehouse": "theLakehouse",
 "deltaTablePrefix": "fabricmonitoring_"
 ```
+## Import the notebooks
+
+Import the notebooks into the workspace you want to use for this solution. Assign the lakehouse you want to use as the default.
+
+## Create the folder structure
+
+Create the folder structure you configured in the configuration file.
+## Run the notebooks
+Use this sequence
++ FabricMonitoring_TenantSettings_GetData
++ FabricMonitoring_TenantSettings_TransformData
++ FabricMonitoring_TenantSettings_RefreshSemanticModel (this step is only necessary, if you created a custom semantic model)
 # Some additional notes
 This is the link to a presentation at the Global Power Platform Bootcamp Hamburg. This presentation contains definitions of the risk types: https://github.com/tomatminceddata/TomsPublicSpeaking/blob/main/20240224%20-%20GPPBCHH%20-%20Tom%20Martens%20-%20Microsoft%20Fabric%20Tenant%20Settings/20240224%20-%20GPPBC%20-%20Tom%20Martens%20-%20Microsoft%20Fabric%20Tenant%20Settings%20-%2020240224.pptx
