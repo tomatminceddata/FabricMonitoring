@@ -72,11 +72,13 @@ After the “_raw” delta table is created, the merge command of the DeltaTable
 ### FabricMonitoring_TenantSettings_RefreshSemanticModel
 This notebook is refreshing the semantic when executed. Refreshing of a semantic models is necessary even if the model is using the direct lake connection mode. Because of the direct lake connection mode can be considered a meta data operation. the execution takes only seconds.
 ## The dataflow - FabricMonitoring_TenanSettings_Settings
-This dataflow reads the data from the Excel file (located in a SharePoint folder) into the the delta table “fabricmonitoring_tenantsettings_settings_silver”
+This dataflow reads the data from the Excel file (located in a SharePoint folder) into the delta table “fabricmonitoring_tenantsettings_settings_silver”
 
-At the moment this table can be considered the dimension table that represent the settings.
+Currently, this table can be considered the dimension table that represents the settings.
 
-You will find the JSON of this dataflow in the folder “dataflows” of this repo.
+You will find the JSON of this dataflow in the folder “dataflows” of this repo. Next to the JSON file, this folder also contains a Power Query Template file; this makes the rebuilding of the solution way more simple. Future dataflows will only be provided as a template file.
+
+Be aware that template files can only be imported using dataflows gen 2. This article provides more information about template files: https://learn.microsoft.com/en-us/power-query/power-query-template
 ## The semantic model
 Currently I have no idea how to make it simple to share the metadata of a semantic model, probably I will start using Tabular Editor c# scripts in a couple of weeks. For now some screenshots and some code blocks have to be sufficient.
 ### The relationships of the model
@@ -181,16 +183,16 @@ Adapt the value accordingly
 "deltaTablePrefix": "fabricmonitoring_"
 ```
 ## Import the notebooks
-
 Import the notebooks into the workspace you want to use for this solution. Assign the lakehouse you want to use as the default.
 
 ## Create the folder structure
-
 Create the folder structure you configured in the configuration file.
 ## Run the notebooks
 Use this sequence
 + FabricMonitoring_TenantSettings_GetData
 + FabricMonitoring_TenantSettings_TransformData
 + FabricMonitoring_TenantSettings_RefreshSemanticModel (this step is only necessary, if you created a custom semantic model)
+## Import the Power Query Template file
+Import the Power Query Template file. The PQT file is located in the Dataflows folder of this repo. PQT can only be imported using dataflows gen 2.
 # Some additional notes
 This is the link to a presentation at the Global Power Platform Bootcamp Hamburg. This presentation contains definitions of the risk types: https://github.com/tomatminceddata/TomsPublicSpeaking/blob/main/20240224%20-%20GPPBCHH%20-%20Tom%20Martens%20-%20Microsoft%20Fabric%20Tenant%20Settings/20240224%20-%20GPPBC%20-%20Tom%20Martens%20-%20Microsoft%20Fabric%20Tenant%20Settings%20-%2020240224.pptx
