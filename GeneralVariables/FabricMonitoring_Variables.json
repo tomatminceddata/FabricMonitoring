@@ -4,6 +4,7 @@
     "nameOfTheKeyVault": "minceddataAzureKeyVault",
     "nameOfTheKey": "<name of the secret>",
     "filepathTenantSettings": "Files/FabricMonitoring/TenantSettings/",
+    "filepathGateways": "Files/FabricMonitoring/Gateways/",
     "theLakehouse": "theLakehouse",
     "deltaTablePrefix": "fabricmonitoring_"
 }
