@@ -70,6 +70,8 @@ Currently this happens every time the notebook is executed. Because of the small
 
 After the “_raw” delta table is created, the merge command of the DeltaTable object is used to propagate data to the _bronze and _silver delta tables. Currently there are no _gold tables, this will change when the solution evolves.
 ### FabricMonitoring_TenantSettings_RefreshSemanticModel
+Currently this notebook is no longer needed because it is replaced by the pipeline activity "semantic model refresh", nevertheless the notebook is kept in this repository as it may inspire ohter use cases.
+
 This notebook is refreshing the semantic when executed. Refreshing of a semantic models is necessary even if the model is using the direct lake connection mode. Because of the direct lake connection mode can be considered a meta data operation. the execution takes only seconds.
 ## The dataflow - FabricMonitoring_TenanSettings_Settings
 This dataflow reads the data from the Excel file (located in a SharePoint folder) into the delta table “fabricmonitoring_tenantsettings_settings_silver”
